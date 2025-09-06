@@ -1,8 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
-// Charger les variables d’environnement
 dotenv.config();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// Charger les variables d’environnement
 
 const app = express();
 const PORT = process.env.PORT || 5000;
