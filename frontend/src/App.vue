@@ -1,20 +1,22 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { ChartNoAxesCombined, BadgePlus } from "lucide-vue-next";
+
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">    
+          <BadgePlus class="w-12 h-12 text-green-500" />
+        </RouterLink>
+        <RouterLink to="/about">
+          <ChartNoAxesCombined class="w-12 h-12 text-green-500" />
+        </RouterLink>
       </nav>
-    </div>
+
   </header>
 
   <RouterView />
@@ -42,9 +44,6 @@ nav a.router-link-exact-active {
   color: var(--color-text);
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
 
 nav a {
   display: inline-block;
@@ -60,7 +59,6 @@ nav a:first-of-type {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
   }
 
   .logo {
@@ -74,10 +72,8 @@ nav a:first-of-type {
   }
 
   nav {
-    text-align: left;
-    margin-left: -1rem;
+    text-align: center;
     font-size: 1rem;
-
     padding: 1rem 0;
     margin-top: 1rem;
   }
