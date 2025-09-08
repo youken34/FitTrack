@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
-import { ChartNoAxesCombined, BadgePlus } from "lucide-vue-next";
+import { ChartNoAxesCombined, BadgePlus, LayoutDashboard } from "lucide-vue-next";
 
 </script>
 
@@ -10,11 +10,14 @@ import { ChartNoAxesCombined, BadgePlus } from "lucide-vue-next";
 
       <nav>
         <RouterLink to="/">    
-          <BadgePlus class="w-12 h-12 text-green-500" />
+          <LayoutDashboard class="w-12 h-12 text-white" />
+        </RouterLink>
+        <RouterLink to="/add">
+          <BadgePlus class="w-12 h-12 text-white" />
         </RouterLink>
         <RouterLink to="/about">
-          <ChartNoAxesCombined class="w-12 h-12 text-green-500" />
-        </RouterLink>
+          <ChartNoAxesCombined class="w-12 h-12 text-white" />
+        </RouterLink> 
       </nav>
 
   </header>
