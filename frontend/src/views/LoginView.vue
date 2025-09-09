@@ -311,7 +311,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 
+const userStore = useUserStore()
+const router = useRouter()
 
 // État réactif
 const activeTab = ref('login')
@@ -364,21 +368,44 @@ const passwordStrengthText = computed(() => {
 // Méthodes
 const handleLogin = async () => {
   isLoading.value = true
-  
-  try {
-    // Simulation d'une requête API
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    console.log('Login:', loginForm.value)
-    showSuccessMessage('Connexion réussie ! Redirection en cours...')
-    
-    // Redirection vers le dashboard
+
+ try {
+    const response = await fetch("http://localhost:5000/api/users/login", {
+      method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+       },
+      body: JSON.stringify({
+        email: loginForm.value.email,
+        password: loginForm.value.password
+      })
+    })
+
+    if (!response.ok) throw new Error("Erreur serveur")
+
+    const data = await response.json()
+    console.log("✅ Connecté:", data)
+
+    // Stocker token et user dans localStorage
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    // Mettre à jour le state global si tu utilises Pinia ou Vuex
+    userStore.setUser(data.user, data.token)
+
+    showSuccessMessage("Compte créé avec succès ! Vérifiez votre email.")
+
+    // L'utilisateur est maintenant considéré comme connecté
+   activeTab.value = "dashboard"; // ou redirection vers la page d’accueil
+   router.push('/');
+
+
     setTimeout(() => {
-      console.log('Redirect to dashboard')
-    }, 1500)
-    
+      resetRegisterForm()
+      activeTab.value = "login"
+    }, 2000)
   } catch (error) {
-    console.error('Erreur de connexion:', error)
+    console.error("❌ Erreur d'inscription:", error)
   } finally {
     isLoading.value = false
   }
@@ -407,9 +434,21 @@ const handleRegister = async () => {
     if (!response.ok) throw new Error("Erreur serveur")
 
     const data = await response.json()
-    console.log("✅ Register:", data)
+    console.log("✅ Inscrit:", data)
+
+    // Stocker token et user dans localStorage
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    // Mettre à jour le state global si tu utilises Pinia ou Vuex
+    userStore.setUser(data.user, data.token)
 
     showSuccessMessage("Compte créé avec succès ! Vérifiez votre email.")
+
+    // L'utilisateur est maintenant considéré comme connecté
+    activeTab.value = "dashboard"; // ou redirection vers la page d’accueil
+    router.push('/');
+
 
     setTimeout(() => {
       resetRegisterForm()

@@ -1,12 +1,22 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import { ChartNoAxesCombined, BadgePlus, LayoutDashboard } from "lucide-vue-next";
+import { ChartNoAxesCombined, BadgePlus, LayoutDashboard, LogOut } from "lucide-vue-next";
+import { useUserStore } from '@/stores/user';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router'
 
+const userStore = useUserStore();
+const isLoggedIn = computed(() => !!userStore.token);
+const router = useRouter()
+
+const logOut = () => {
+  userStore.logout()
+  router.push('/login')
+};
 </script>
 
 <template>
-  <header>
+  <header v-if="isLoggedIn">
     <nav>
       <RouterLink to="/" v-slot="{ isExactActive }">
         <LayoutDashboard :class="['w-12 h-12', isExactActive ? 'text-blue-500' : 'text-white']" />
@@ -20,6 +30,9 @@ import { ChartNoAxesCombined, BadgePlus, LayoutDashboard } from "lucide-vue-next
         <ChartNoAxesCombined :class="['w-12 h-12', isExactActive ? 'text-blue-500' : 'text-white']" />
       </RouterLink>
     </nav>
+    <LogOut
+      class="w-12 h-12 text-white cursor-pointer"
+      @click="logOut()"></LogOut>
   </header>
 
   <RouterView />
