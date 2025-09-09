@@ -312,12 +312,14 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 
+
 // État réactif
 const activeTab = ref('login')
 const showPassword = ref(false)
 const isLoading = ref(false)
 const showSuccess = ref(false)
 const successMessage = ref('')
+
 
 // Formulaires
 const loginForm = ref({
@@ -384,27 +386,41 @@ const handleLogin = async () => {
 
 const handleRegister = async () => {
   if (!passwordsMatch.value || !registerForm.value.acceptTerms) return
-  
+
   isLoading.value = true
-  
+
   try {
-    // Simulation d'une requête API
-    await new Promise(resolve => setTimeout(resolve, 2500))
-    
-    console.log('Register:', registerForm.value)
-    showSuccessMessage('Compte créé avec succès ! Vérifiez votre email.')
-    
-    // Reset form et switch to login
+    const response = await fetch("http://localhost:5000/api/users/register", {
+      method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+       },
+      body: JSON.stringify({
+        firstName: registerForm.value.firstName,
+        lastName: registerForm.value.lastName,
+        email: registerForm.value.email,
+        password: registerForm.value.password
+      })
+    })
+
+    if (!response.ok) throw new Error("Erreur serveur")
+
+    const data = await response.json()
+    console.log("✅ Register:", data)
+
+    showSuccessMessage("Compte créé avec succès ! Vérifiez votre email.")
+
     setTimeout(() => {
       resetRegisterForm()
-      activeTab.value = 'login'
+      activeTab.value = "login"
     }, 2000)
-    
   } catch (error) {
-    console.error('Erreur d\'inscription:', error)
+    console.error("❌ Erreur d'inscription:", error)
   } finally {
     isLoading.value = false
   }
+
 }
 
 const socialLogin = (provider) => {

@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import userRoutes from "./routes/userRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -11,10 +13,20 @@ mongoose
 // Charger les variables d’environnement
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware pour parser le JSON
 app.use(express.json());
+
+// Routes utilisées
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+app.use("/api/users", userRoutes);
+const PORT = process.env.PORT || 5000;
 
 // Route test
 app.get("/", (req, res) => {
