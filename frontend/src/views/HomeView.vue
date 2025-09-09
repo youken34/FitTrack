@@ -8,7 +8,6 @@
           <p class="text-purple-200">Suivez vos performances et atteignez vos objectifs</p>
         </div>
         <router-link to="/add" 
-          @click="addSession"
           class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

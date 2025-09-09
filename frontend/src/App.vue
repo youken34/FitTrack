@@ -7,19 +7,19 @@ import { ChartNoAxesCombined, BadgePlus, LayoutDashboard } from "lucide-vue-next
 
 <template>
   <header>
+    <nav>
+      <RouterLink to="/" v-slot="{ isExactActive }">
+        <LayoutDashboard :class="['w-12 h-12', isExactActive ? 'text-blue-500' : 'text-white']" />
+      </RouterLink>
 
-      <nav>
-        <RouterLink to="/">    
-          <LayoutDashboard class="w-12 h-12 text-white" />
-        </RouterLink>
-        <RouterLink to="/add">
-          <BadgePlus class="w-12 h-12 text-white" />
-        </RouterLink>
-        <RouterLink to="/about">
-          <ChartNoAxesCombined class="w-12 h-12 text-white" />
-        </RouterLink> 
-      </nav>
+      <RouterLink to="/add" v-slot="{ isExactActive }">
+        <BadgePlus :class="['w-12 h-12', isExactActive ? 'text-blue-500' : 'text-white']" />
+      </RouterLink>
 
+      <RouterLink to="/about" v-slot="{ isExactActive }">
+        <ChartNoAxesCombined :class="['w-12 h-12', isExactActive ? 'text-blue-500' : 'text-white']" />
+      </RouterLink>
+    </nav>
   </header>
 
   <RouterView />
