@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import sessionRoutes from "./routes/sessionRoutes.js";
 import cors from "cors";
 
 dotenv.config();
@@ -26,6 +28,8 @@ app.use(
   })
 );
 app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/sessions", sessionRoutes);
 const PORT = process.env.PORT || 5000;
 
 // Route test

@@ -28,7 +28,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Total séances</p>
-              <p class="text-3xl font-bold text-white">{{ stats.totalSessions }}</p>
+              <p class="text-3xl font-bold text-white">{{ dashboardData?.totalSessions || 0 }}</p>
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Heures ce mois</p>
-              <p class="text-3xl font-bold text-white">{{ stats.monthlyHours }}h</p>
+              <p class="text-3xl font-bold text-white">{{ dashboardData?.hoursThisMonth || 0 }}h</p>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Poids actuel</p>
-              <p class="text-3xl font-bold text-white">{{ stats.currentWeight }} kg</p>
+              <p  class="text-3xl font-bold text-white">{{ dashboardData?.currentWeight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Objectif</p>
-              <p class="text-3xl font-bold text-white">{{ stats.targetWeight }} kg</p>
+              <p class="text-3xl font-bold text-white">{{ dashboardData?.targetWeight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -198,13 +198,19 @@
 import { ref, computed, onMounted } from 'vue'
 
 // État réactif
-const stats = ref({
-  totalSessions: 24,
-  monthlyHours: 18.5,
-  currentWeight: 75,
-  targetWeight: 70,
-  avgSessionDuration: 45
+const dashboardData = ref(null);
+
+onMounted(async () => {
+  const token = localStorage.getItem("token");
+  const response = await fetch("http://localhost:5000/api/dashboard", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  dashboardData.value = await response.json();
 })
+
+
 
 const progressData = ref([
   { date: '01/09', weight: 78, km: 5.2, duration: 35 },
@@ -229,6 +235,7 @@ const recentSessions = ref([
   { id: 2, type: 'Musculation', duration: '60 min', calories: 380, date: 'Hier' },
   { id: 3, type: 'Yoga', duration: '30 min', calories: 150, date: 'Il y a 2 jours' }
 ])
+
 
 // Computed pour la ligne de poids SVG
 const weightLinePoints = computed(() => {

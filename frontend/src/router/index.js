@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AboutView from "../views/AboutView.vue";
-import AddTrainingView from "../views/AddTrainingView.vue";
+import newSessionView from "../views/newSessionView.vue";
 import LoginView from "@/views/LoginView.vue";
 import { useUserStore } from "@/stores/user";
 
@@ -21,7 +21,7 @@ const routes = [
   {
     path: "/add",
     name: "add",
-    component: AddTrainingView,
+    component: newSessionView,
     meta: { requiresAuth: true },
   },
   {
