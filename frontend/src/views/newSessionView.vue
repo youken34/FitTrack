@@ -229,6 +229,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useDashboardStore } from "@/stores/dashboard";
+
+const dashboardStore = useDashboardStore();
 
 // État réactif
 const isLoading = ref(false)
@@ -330,54 +333,35 @@ const validateForm = () => {
 }
 
 const createSession = async () => {
-
+  if (!validateForm()) return
 
   isLoading.value = true
+
+  const token = localStorage.getItem("token");
 
   try {
     const response = await fetch("http://localhost:5000/api/sessions", {
       method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
        },
       body: JSON.stringify({
-        firstName: registerForm.value.firstName,
-        lastName: registerForm.value.lastName,
-        email: registerForm.value.email,
-        password: registerForm.value.password
+        duration: sessionForm.value.duration,
+        calories: sessionForm.value.calories,
+        muscleGroup: sessionForm.value.muscleGroup,
+        date: sessionForm.value.date,
       })
     })
 
     if (!response.ok) throw new Error("Erreur serveur")
-
-    const data = await response.json()
-    console.log("✅ Inscrit:", data)
-
-    // Stocker token et user dans localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    // Mettre à jour le state global si tu utilises Pinia ou Vuex
-    userStore.setUser(data.user, data.token)
-
-    showSuccessMessage("Compte créé avec succès ! Vérifiez votre email.")
-
-    // L'utilisateur est maintenant considéré comme connecté
-    activeTab.value = "dashboard"; // ou redirection vers la page d’accueil
-    router.push('/');
-
-
-    setTimeout(() => {
-      resetRegisterForm()
-      activeTab.value = "login"
-    }, 2000)
+    isLoading.value = false
+    dashboardStore.updateDashboardData(sessionForm.value.duration)
   } catch (error) {
     console.error("❌ Erreur d'inscription:", error)
   } finally {
     isLoading.value = false
   }
-
 
 }
 
@@ -391,10 +375,7 @@ const resetForm = () => {
   errors.value = {}
 }
 
-const goBack = () => {
-  console.log('Retour au dashboard')
-  // Navigation vers le dashboard
-}
+
 
 // Lifecycle
 onMounted(() => {

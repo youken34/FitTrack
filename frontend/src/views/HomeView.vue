@@ -28,7 +28,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Total séances</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardData?.totalSessions || 0 }}</p>
+              <p class="text-3xl font-bold text-white">{{ dashboardData.data?.totalSessions || 0 }}</p>
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Heures ce mois</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardData?.hoursThisMonth || 0 }}h</p>
+              <p class="text-3xl font-bold text-white">{{ formatHours(dashboardData.data?.hoursThisMonth) || '0 h' }}</p>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Poids actuel</p>
-              <p  class="text-3xl font-bold text-white">{{ dashboardData?.currentWeight || 0 }} kg</p>
+              <p  class="text-3xl font-bold text-white">{{ dashboardData.data?.currentWeight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Objectif</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardData?.targetWeight || 0 }} kg</p>
+              <p class="text-3xl font-bold text-white">{{ dashboardData.data?.targetWeight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -159,13 +159,12 @@
           </div>
         </div>
       </div>
-
       <!-- Recent Sessions -->
       <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
         <h3 class="text-xl font-semibold text-white mb-6">Séances récentes</h3>
         <div class="space-y-4">
           <div
-            v-for="session in recentSessions"
+            v-for="session in dashboardData.data?.lastSessions || []"
             :key="session.id"
             class="bg-white/5 rounded-xl p-4 hover:bg-white/10 transition-colors duration-200 cursor-pointer"
             @click="viewSession(session.id)"
@@ -179,11 +178,13 @@
                 </div>
                 <div>
                   <h4 class="text-white font-semibold">{{ session.type }}</h4>
-                  <p class="text-gray-300 text-sm">{{ session.date }}</p>
+                  <p v-if="sameDay(session.date)" class="text-gray-300 text-sm">Aujourd'hui</p>
+                  <p v-else-if="yesterday(session.date)" class="text-gray-300 text-sm">Hier</p>
+                  <p v-else class="text-gray-300 text-sm">{{ formatDate(session.date) }}</p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="text-white font-semibold">{{ session.duration }}</p>
+                <p class="text-white font-semibold">{{ formatHours(session.duration / 60)  }}</p>
                 <p class="text-gray-300 text-sm">{{ session.calories }} cal</p>
               </div>
             </div>
@@ -196,18 +197,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
+import { useDashboardStore } from "@/stores/dashboard";
+import { formatHours, formatDate } from "../../utils/timeFormatter.js";
+import { sameDay, yesterday } from "../../utils/dateComparison.js";
 // État réactif
-const dashboardData = ref(null);
+const dashboardData = useDashboardStore();
 
 onMounted(async () => {
-  const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:5000/api/dashboard", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-  dashboardData.value = await response.json();
+  dashboardData.fetchDashboardData();
 })
 
 
@@ -229,6 +226,7 @@ const weeklyActivity = ref([
   { day: 'Sam', sessions: 4 },
   { day: 'Dim', sessions: 2 }
 ])
+
 
 const recentSessions = ref([
   { id: 1, type: 'Course', duration: '45 min', calories: 420, date: 'Aujourd\'hui' },

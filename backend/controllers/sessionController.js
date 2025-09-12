@@ -2,8 +2,15 @@ import Session from "../models/Session.js";
 
 export const createSession = async (req, res) => {
   try {
-    const { userId, duration, calories, muscleGroup } = req.body;
-    const session = new Session({ userId, duration, calories, muscleGroup });
+    const { duration, calories, muscleGroup, date } = req.body;
+    const userId = req.user.id;
+    const session = new Session({
+      userId,
+      date,
+      duration,
+      calories,
+      muscleGroup,
+    });
     await session.save();
     res.status(201).json(session);
   } catch (error) {

@@ -1,10 +1,10 @@
+import mongoose from "mongoose";
 import Session from "../models/Session.js";
 import User from "../models/user.js";
 
-// Récupérer les stats pour le dashboard
 export const getDashboardData = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = new mongoose.Types.ObjectId(req.user.id);
 
     // 🔹 Total des séances
     const totalSessions = (await Session.countDocuments({ userId })) || 0;
@@ -22,20 +22,34 @@ export const getDashboardData = async (req, res) => {
     );
 
     const sessionsThisMonth = await Session.aggregate([
-      { $match: { userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
-      { $group: { _id: null, totalDuration: { $sum: "$duration" } } },
+      {
+        $match: {
+          userId,
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalDuration: { $sum: "$duration" },
+        },
+      },
     ]);
 
     const hoursThisMonth = (sessionsThisMonth[0]?.totalDuration || 0) / 60;
 
-    // 🔹 Poids actuel + objectif
     const user = await User.findById(userId);
+
+    const lastSessions = await Session.find({ userId })
+      .sort({ date: -1 })
+      .limit(3);
 
     res.json({
       totalSessions,
-      hoursThisMonth,
-      currentWeight: user.weight,
-      targetWeight: user.targetWeight,
+      hoursThisMonth: hoursThisMonth,
+      currentWeight: user?.weight || 0,
+      targetWeight: user?.targetWeight || 0,
+      lastSessions: lastSessions,
     });
   } catch (error) {
     console.error("❌ Dashboard error:", error);
