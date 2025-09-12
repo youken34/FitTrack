@@ -2,7 +2,7 @@
   <div class="min-h-[80vh] px-6">
     <div class="max-w-2xl mx-auto flex flex-col h-full">
       <!-- Header avec retour -->
-      <div class="flex items-center gap-4" style="margin-bottom: 10px;">
+      <div class="flex items-center gap-4" style="margin-block: 10px;">
         <div>
           <h1 class="text-3xl font-bold text-white">Nouvelle Séance</h1>
           <p class="text-purple-200">Enregistrez votre entraînement</p>
@@ -331,12 +331,11 @@ const validateForm = () => {
 
 const createSession = async () => {
 
-  if (!passwordsMatch.value || !registerForm.value.acceptTerms) return
 
   isLoading.value = true
 
   try {
-    const response = await fetch("http://localhost:5000/api/users/register", {
+    const response = await fetch("http://localhost:5000/api/sessions", {
       method: "POST",
         headers: {
             "Content-Type": "application/json",

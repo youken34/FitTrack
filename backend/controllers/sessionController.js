@@ -1,5 +1,4 @@
 import Session from "../models/Session.js";
-import User from "../models/User.js";
 
 export const createSession = async (req, res) => {
   try {
