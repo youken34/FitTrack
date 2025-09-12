@@ -6,10 +6,7 @@ export const getDashboardData = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
 
-    // 🔹 Total des séances
-    const totalSessions = (await Session.countDocuments({ userId })) || 0;
-
-    // 🔹 Heures ce mois
+    // 🔹 Total des séances + Heures ce mois + récupérer toutes les séances de ce mois
     const startOfMonth = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
@@ -21,35 +18,57 @@ export const getDashboardData = async (req, res) => {
       0
     );
 
-    const sessionsThisMonth = await Session.aggregate([
-      {
-        $match: {
-          userId,
-          date: { $gte: startOfMonth, $lte: endOfMonth },
-        },
-      },
+    const monthAggregation = await Session.aggregate([
+      { $match: { userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
       {
         $group: {
           _id: null,
           totalDuration: { $sum: "$duration" },
+          totalSessions: { $sum: 1 },
         },
       },
     ]);
 
-    const hoursThisMonth = (sessionsThisMonth[0]?.totalDuration || 0) / 60;
+    const totalSessions = monthAggregation[0]?.totalSessions || 0;
+    const hoursThisMonth = (monthAggregation[0]?.totalDuration || 0) / 60;
 
-    const user = await User.findById(userId);
-
+    // 🔹 Dernières 3 séances
     const lastSessions = await Session.find({ userId })
       .sort({ date: -1 })
       .limit(3);
 
+    const today = new Date();
+    const day = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((day + 6) % 7));
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    const weekSessions = await Session.find({
+      userId,
+      date: { $gte: monday, $lte: sunday },
+    }).sort({ date: 1 });
+
+    const sessionsByDay = Array(7).fill(0);
+    weekSessions.forEach((s) => {
+      const sDate = new Date(s.date);
+      const dayIndex = (sDate.getDay() + 6) % 7;
+      sessionsByDay[dayIndex] += s.calories || 0;
+    });
+
+    // 🔹 Infos utilisateur
+    const user = await User.findById(userId);
+
     res.json({
       totalSessions,
-      hoursThisMonth: hoursThisMonth,
+      hoursThisMonth,
       currentWeight: user?.weight || 0,
       targetWeight: user?.targetWeight || 0,
-      lastSessions: lastSessions,
+      lastSessions,
+      sessionsByDay,
     });
   } catch (error) {
     console.error("❌ Dashboard error:", error);

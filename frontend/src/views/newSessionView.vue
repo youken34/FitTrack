@@ -356,7 +356,15 @@ const createSession = async () => {
 
     if (!response.ok) throw new Error("Erreur serveur")
     isLoading.value = false
-    dashboardStore.updateDashboardData(sessionForm.value.duration)
+    dashboardStore.updateDashboardData({
+      duration: sessionForm.value.duration,
+      newSession: {
+        duration: sessionForm.value.duration,
+        calories: sessionForm.value.calories,
+        muscleGroup: sessionForm.value.muscleGroup,
+        date: sessionForm.value.date,
+      }
+    })
   } catch (error) {
     console.error("❌ Erreur d'inscription:", error)
   } finally {

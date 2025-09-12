@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen p-6 h-[900px]">
+  <div class="h-[800px]">
     <div class="max-w-7xl mx-auto h-full flex flex-col justify-evenly">
       <!-- Header -->
       <div class="flex justify-between items-center mb-8">
@@ -146,15 +146,16 @@
           </h3>
           <div class="h-64 flex items-end justify-between gap-4">
             <div
-              v-for="(day, index) in weeklyActivity"
+              v-for="(day, index) in dashboardData.data?.sessionsByDay"
               :key="index"
               class="flex-1 flex flex-col items-center gap-2"
             >
-              <div
-                :style="{ height: (day.sessions * 40) + 20 + 'px' }"
-                class="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-500 hover:from-green-500 hover:to-green-300"
-              ></div>
-              <span class="text-gray-300 text-sm">{{ day.day }}</span>
+            <p v-if="day">{{ day }} cal</p>
+            <div
+              :style="{ height: (day / 5  + 20) + 'px' }"
+              class="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-500 hover:from-green-500 hover:to-green-300 max-h-[200px]"
+            ></div>
+            <span class="text-gray-300 text-sm">{{ ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][index] }}</span>
             </div>
           </div>
         </div>
@@ -162,7 +163,7 @@
       <!-- Recent Sessions -->
       <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
         <h3 class="text-xl font-semibold text-white mb-6">Séances récentes</h3>
-        <div class="space-y-4">
+        <div class="space-y-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="session in dashboardData.data?.lastSessions || []"
             :key="session.id"
@@ -181,6 +182,7 @@
                   <p v-if="sameDay(session.date)" class="text-gray-300 text-sm">Aujourd'hui</p>
                   <p v-else-if="yesterday(session.date)" class="text-gray-300 text-sm">Hier</p>
                   <p v-else class="text-gray-300 text-sm">{{ formatDate(session.date) }}</p>
+                  <p class="text-gray-400 text-sm">{{ session.muscleGroup }}</p>
                 </div>
               </div>
               <div class="text-right">
@@ -225,13 +227,6 @@ const weeklyActivity = ref([
   { day: 'Ven', sessions: 1 },
   { day: 'Sam', sessions: 4 },
   { day: 'Dim', sessions: 2 }
-])
-
-
-const recentSessions = ref([
-  { id: 1, type: 'Course', duration: '45 min', calories: 420, date: 'Aujourd\'hui' },
-  { id: 2, type: 'Musculation', duration: '60 min', calories: 380, date: 'Hier' },
-  { id: 3, type: 'Yoga', duration: '30 min', calories: 150, date: 'Il y a 2 jours' }
 ])
 
 
