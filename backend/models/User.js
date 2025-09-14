@@ -7,6 +7,12 @@ const userSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   weight: { type: Number, required: false },
   targetWeight: { type: Number },
+  weightHistory: [
+    {
+      date: { type: Date, default: Date.now },
+      weight: { type: Number, required: true },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 

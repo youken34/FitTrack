@@ -99,7 +99,7 @@ const navItems = [
         <!-- Actions Desktop -->
         <div class="hidden md:flex items-center gap-3">
           <!-- User Profile Button -->
-          <button class="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/20 transition-all duration-300 group">
+          <RouterLink to="/profile" class="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/20 transition-all duration-300 group">
             <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
               <User class="w-4 h-4 text-white" />
             </div>
@@ -107,7 +107,7 @@ const navItems = [
               <div class="text-sm font-medium text-white">{{ userStore.user?.firstName || 'Utilisateur' }}</div>
               <div class="text-xs text-gray-400">Mon profil</div>
             </div>
-          </button>
+          </RouterLink>
 
           <!-- Logout Button -->
           <button

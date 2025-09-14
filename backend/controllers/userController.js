@@ -65,6 +65,51 @@ export const loginUser = async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      createdAt: user.createdAt,
+      weight: user.weight,
+      targetWeight: user.targetWeight,
+      weightHistory: user.weightHistory,
     },
   });
+};
+
+export const updateInfo = async (req, res) => {
+  const userId = req.user.id;
+  const { firstName, lastName, weight, targetWeight } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+
+    if (weight) {
+      user.weight = weight;
+
+      user.weightHistory.push({
+        weight: weight,
+      });
+    }
+
+    user.targetWeight = targetWeight || user.targetWeight;
+
+    await user.save();
+
+    res.status(200).json({
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      createdAt: user.createdAt,
+      weight: user.weight,
+      targetWeight: user.targetWeight,
+      weightHistory: user.weightHistory,
+    });
+  } catch (error) {
+    console.error("❌ updateInfo error:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 };
