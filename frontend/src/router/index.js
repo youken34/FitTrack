@@ -43,15 +43,13 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard globale
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  const isLoggedIn = !!userStore.token; // token vient du store
-
+  const isLoggedIn = !!userStore.token;
   if (to.meta.requiresAuth && !isLoggedIn) {
     next("/login");
   } else if (to.meta.requiresGuest && isLoggedIn) {
-    next("/"); // dashboard
+    next("/");
   } else {
     next();
   }

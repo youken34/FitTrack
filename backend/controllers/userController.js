@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
+import Session from "../models/Session.js";
 
 // Générer un token JWT
 const generateToken = (userId) => {
@@ -57,6 +58,9 @@ export const loginUser = async (req, res) => {
   }
 
   const token = generateToken(user._id);
+  const lastSessions = await Session.find({ userId: user._id })
+    .sort({ date: -1 })
+    .limit(3);
 
   res.status(200).json({
     token,
@@ -69,6 +73,7 @@ export const loginUser = async (req, res) => {
       weight: user.weight,
       targetWeight: user.targetWeight,
       weightHistory: user.weightHistory,
+      lastSessions: lastSessions,
     },
   });
 };

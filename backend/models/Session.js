@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const sessionSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  date: { type: Date },
+  date: { type: Date, required: true },
   duration: { type: Number, required: true }, // en minutes
   calories: { type: Number }, // optionnel
   muscleGroup: {

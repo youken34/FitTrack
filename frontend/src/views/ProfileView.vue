@@ -188,11 +188,11 @@
                     <span class="text-sm text-gray-300">{{ userStore.user.weight }} kg</span>
                     <span class="text-sm text-gray-300">{{ userStore.user.targetWeight }} kg</span>
                   </div>
-                  <div class="relative h-3 bg-gray-700 rounded-full overflow-hidden">
-                    <div 
-                      class="absolute left-0 top-0 h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-500"
-                      :style="{ width: Math.min(Math.abs(progressPercentage), 100) + '%' }"
-                    ></div>
+                  <div class="relative h-3 bg-gray-700 rounded-full overflow-hidden items-center flex">
+                   <div 
+                    class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500 h-full"
+                    :style="{ width: Math.min(progressPercentage, 100) + '%' }"
+                  ></div>
                   </div>
                   <div class="flex justify-center mt-2">
                     <span class="text-xs font-medium px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full">
@@ -235,7 +235,7 @@
           </div>
 
           <!-- Historique des modifications -->
-          <div v-if="weightHistory.length > 0" class="mt-8 bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <div v-if="userStore.user.weightHistory && userStore.user.weightHistory.length > 0" class="mt-8 bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
             <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -244,11 +244,10 @@
             </h3>
             <div class="space-y-2">
               <div
-                v-for="entry in weightHistory"
-                :key="entry.id"
-                class="flex justify-between items-center py-2 px-3 bg-white/5 rounded-lg"
+                v-for="entry in [...userStore.user.weightHistory].reverse()"
+                class="flex justify-between items-center py-2 px-3 bg-white/5 rounded-lg" style="margin-bottom: 5px;"
               >
-                <span class="text-gray-300 text-sm">{{ entry.date }}</span>
+                <span class="text-gray-300 text-sm">{{ formatDate(entry.date)}}</span>
                 <span class="text-white font-medium">{{ entry.weight }} kg</span>
               </div>
             </div>
@@ -278,19 +277,9 @@ import { useUserStore } from '@/stores/user'
 import { formatDate } from '../../utils/timeFormatter'
 
 const userStore = useUserStore()
-console.log(userStore.user)
 const isEditing = ref(false)
 const isLoading = ref(false)
 const showSuccess = ref(false)
-
-
-
-// Historique de poids (exemple)
-const weightHistory = ref([
-  { id: 1, date: '15 Sep 2025', weight: 75.5 },
-  { id: 2, date: '01 Sep 2025', weight: 76.2 },
-  { id: 3, date: '15 Aug 2025', weight: 77.0 },
-])
 
 
 const remainingWeight = computed(() => {
@@ -309,12 +298,24 @@ const remainingWeight = computed(() => {
 
 const progressPercentage = computed(() => {
   if (!userStore.user.weight || !userStore.user.targetWeight) return 0
-  
-  const initialWeight = userStore.user.weightHistory[0]
-  const totalLoss = initialWeight - userStore.user.targetWeight
-  const currentLoss = initialWeight - userStore.user.weight
-  
-  return Math.round((currentLoss / totalLoss) * 100)
+  console.log(userStore.user)
+
+  if (userStore.user.weight > userStore.user.targetWeight) {
+    const initialWeight = userStore.user.weightHistory[0].weight
+    const totalLoss = initialWeight - userStore.user.targetWeight
+    const currentLoss = initialWeight - userStore.user.weight
+    return Math.round((currentLoss / totalLoss) * 100)
+  }
+  else if (userStore.user.weight < userStore.user.targetWeight) {
+    const initialWeight = userStore.user.weightHistory[0].weight
+    const totalGain = userStore.user.targetWeight - initialWeight
+    const currentGain = userStore.user.weight - initialWeight
+    return Math.round((currentGain / totalGain) * 100)
+  }
+  else {
+      return 100
+  }
+
 })
 
 // Méthodes
