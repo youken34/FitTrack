@@ -50,13 +50,19 @@
         <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-purple-500/20 rounded-xl">
-              <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="userStore.user.weightHistory[userStore.user.weightHistory.length - 1].weight < userStore.user.weightHistory[userStore.user.weightHistory.length - 2].weight" class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
+              <svg v-else-if="userStore.user.weightHistory[userStore.user.weightHistory.length - 1].weight > userStore.user.weightHistory[userStore.user.weightHistory.length - 2].weight" class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9h14M5 15h14" />
+            </svg>
             </div>
             <div>
               <p class="text-gray-300 text-sm">Poids actuel</p>
-              <p  class="text-3xl font-bold text-white">{{ dashboardData.data?.currentWeight || 0 }} kg</p>
+              <p  class="text-3xl font-bold text-white">{{ userStore.user.weight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -70,7 +76,7 @@
             </div>
             <div>
               <p class="text-gray-300 text-sm">Objectif</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardData.data?.targetWeight || 0 }} kg</p>
+              <p class="text-3xl font-bold text-white">{{ userStore.user.targetWeight || 0 }} kg</p>
             </div>
           </div>
         </div>
@@ -202,8 +208,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useDashboardStore } from "@/stores/dashboard";
 import { formatHours, formatDate } from "../../utils/timeFormatter.js";
 import { sameDay, yesterday } from "../../utils/dateComparison.js";
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 // État réactif
 const dashboardData = useDashboardStore();
+console.log(userStore.user.weightHistory[userStore.user.weightHistory.length - 1].weight , userStore.user.weightHistory[userStore.user.weightHistory.length - 2].weight)
 
 onMounted(async () => {
   dashboardData.fetchDashboardData();
@@ -219,15 +228,6 @@ const progressData = ref([
   { date: '08/09', weight: 75, km: 6.5, duration: 45 }
 ])
 
-const weeklyActivity = ref([
-  { day: 'Lun', sessions: 2 },
-  { day: 'Mar', sessions: 1 },
-  { day: 'Mer', sessions: 3 },
-  { day: 'Jeu', sessions: 2 },
-  { day: 'Ven', sessions: 1 },
-  { day: 'Sam', sessions: 4 },
-  { day: 'Dim', sessions: 2 }
-])
 
 
 // Computed pour la ligne de poids SVG

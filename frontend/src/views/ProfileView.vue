@@ -11,7 +11,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
         <!-- Colonne de gauche - Avatar et infos rapides -->
-        <div class="lg:col-span-1 space-y-6 flex flex-col justify-between h-[54%]">
+        <div class="lg:col-span-1 space-y-6 flex flex-col justify-between h-[390px]">
           <!-- Avatar Section -->
           <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 text-center">
             <div class="relative inline-block mb-4">
@@ -92,7 +92,7 @@
               </div>
             </div>
 
-            <form @submit.prevent="updateInfo" class="space-y-8">
+            <form id="profileForm" @submit.prevent="updateInfo" class="space-y-8">
               
               <!-- Informations personnelles -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full" style="margin-bottom: 10px;">
@@ -104,7 +104,8 @@
                     Prénom
                   </label>
                   <input
-                    v-model="userStore.user.firstName"
+                    name="firstName"
+                    v-model="form.firstName"
                     type="text"
                     :disabled="!isEditing"
                     required
@@ -121,7 +122,8 @@
                     Nom de famille
                   </label>
                   <input
-                    v-model="userStore.user.lastName"
+                    name="lastName"
+                    v-model="form.lastName"
                     type="text"
                     :disabled="!isEditing"
                     required
@@ -147,7 +149,8 @@
                     </label>
                     <div class="relative">
                       <input
-                        v-model.number="userStore.user.weight"
+                        name="weight"
+                        v-model="form.weight"
                         type="number"
                         step="0.1"
                         min="30"
@@ -167,7 +170,8 @@
                     </label>
                     <div class="relative">
                       <input
-                        v-model.number="userStore.user.targetWeight"
+                        name="targetWeight"
+                        v-model="form.targetWeight"
                         type="number"
                         step="0.1"
                         min="30"
@@ -244,7 +248,7 @@
             </h3>
             <div class="space-y-2">
               <div
-                v-for="entry in [...userStore.user.weightHistory].reverse()"
+                v-for="entry in [...userStore.user.weightHistory].reverse().slice(0, 3)"
                 class="flex justify-between items-center py-2 px-3 bg-white/5 rounded-lg" style="margin-bottom: 5px;"
               >
                 <span class="text-gray-300 text-sm">{{ formatDate(entry.date)}}</span>
@@ -272,15 +276,30 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, reactive } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { formatDate } from '../../utils/timeFormatter'
 
 const userStore = useUserStore()
+
 const isEditing = ref(false)
 const isLoading = ref(false)
 const showSuccess = ref(false)
+const form = reactive({
+  firstName: '',
+  lastName: '',
+  weight: '',
+  targetWeight: ''
+})
 
+onMounted(() => {
+  Object.assign(form, {
+    firstName: userStore.user.firstName,
+    lastName: userStore.user.lastName,
+    weight: userStore.user.weight,
+    targetWeight: userStore.user.targetWeight
+  })
+})
 
 const remainingWeight = computed(() => {
     if (!userStore.user.weight || !userStore.user.targetWeight) return 0
@@ -330,6 +349,9 @@ const updateInfo = async () => {
 
   try {
     isLoading.value = true
+    const formElement = document.getElementById("profileForm")
+    const formData = new FormData(formElement)
+    const payload = Object.fromEntries(formData.entries())
     const response = await fetch("http://localhost:5000/api/users/updateInfo", {
       method: "PUT",
         headers: {
@@ -337,18 +359,15 @@ const updateInfo = async () => {
             Authorization: `Bearer ${token}`,
 
        },
-      body: JSON.stringify({
-        firstName: userStore.user.firstName,
-        lastName: userStore.user.lastName,
-        weight: userStore.user.weight,
-        targetWeight: userStore.user.targetWeight,
-      })
+      body: JSON.stringify(payload)
     })
     isEditing.value = false
 
     const updatedUser = await response.json()
 
     userStore.user = updatedUser
+
+    userStore.updateWeight(userStore.user.weight) 
       
   } catch (error) {
     console.error('Erreur lors de la mise à jour du profil :', error)

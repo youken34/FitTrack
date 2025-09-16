@@ -17,6 +17,28 @@ export const useUserStore = defineStore("user", {
         this.setUser(user, token);
       }
     },
+    updateWeight(newWeight) {
+      if (this.user) {
+        this.user.weight = newWeight;
+        if (!this.user.weightHistory) {
+          this.user.weightHistory = [];
+        }
+        console.log(
+          newWeight,
+          this.user.weightHistory[this.user.weightHistory.length - 1]?.weight
+        );
+        if (
+          newWeight ===
+          this.user.weightHistory[this.user.weightHistory.length - 1]?.weight
+        )
+          return;
+        this.user.weightHistory.push({
+          date: new Date(),
+          weight: newWeight,
+        });
+        localStorage.setItem("user", JSON.stringify(this.user));
+      }
+    },
     logout() {
       this.user = null;
       this.token = null;

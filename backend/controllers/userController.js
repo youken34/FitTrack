@@ -91,7 +91,7 @@ export const updateInfo = async (req, res) => {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
 
-    if (weight) {
+    if (weight && weight !== user.weight) {
       user.weight = weight;
 
       user.weightHistory.push({
