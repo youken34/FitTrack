@@ -64,7 +64,7 @@
         </div>
 
         <!-- Colonne de droite - Formulaire -->
-        <div class="lg:col-span-2 flex flex-col justify-between h-full">
+        <div class="lg:col-span-2 flex flex-col justify-between size-fit">
           <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
             <div class="flex justify-between items-center mb-8">
               <h3 class="text-2xl font-semibold text-white">Informations personnelles</h3>
@@ -190,7 +190,7 @@
                   </div>
                   <div class="relative h-3 bg-gray-700 rounded-full overflow-hidden items-center flex">
                    <div 
-                    class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500 h-full"
+                    class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 h-full"
                     :style="{ width: Math.min(progressPercentage, 100) + '%' }"
                   ></div>
                   </div>
@@ -235,7 +235,7 @@
           </div>
 
           <!-- Historique des modifications -->
-          <div v-if="userStore.user.weightHistory && userStore.user.weightHistory.length > 0" class="mt-8 bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <div v-if="userStore.user.weightHistory && userStore.user.weightHistory.length > 0" class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20" style="margin-top: 20px;">
             <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
