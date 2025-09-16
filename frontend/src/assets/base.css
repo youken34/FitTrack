@@ -50,6 +50,10 @@
   }
 }
 
+#app {
+  min-height: 100dvh;
+}
+
 *,
 *::before,
 *::after {
@@ -58,8 +62,14 @@
   font-weight: normal;
 }
 
+html {
+  min-height: 900px;
+}
+
 body {
   min-height: 100vh;
+  /* fallback anciens navigateurs */
+  min-height: 100dvh;
   color: var(--color-text);
   transition:
     color 0.5s,

@@ -1,6 +1,6 @@
 <template>
-  <div class="h-[85vh] p-6">
-    <div class="max-w-4xl mx-auto h-full">
+  <div class="p-6">
+    <div class="max-w-4xl mx-auto h-[720px]">
       <!-- Header -->
       <div class="flex items-center gap-4" style="margin-bottom: 10px;">
         <div>
@@ -64,7 +64,7 @@
         </div>
 
         <!-- Colonne de droite - Formulaire -->
-        <div class="lg:col-span-2 flex flex-col justify-between h-[90%]">
+        <div class="lg:col-span-2 flex flex-col justify-between h-full">
           <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
             <div class="flex justify-between items-center mb-8">
               <h3 class="text-2xl font-semibold text-white">Informations personnelles</h3>
@@ -358,25 +358,21 @@ const updateInfo = async () => {
   }
 }
 
-
-
-// Watchers
-watch(() => isEditing.value, (newVal) => {
-  if (!newVal) {
-    // Demander confirmation avant de sortir du mode édition
-    const confirm = window.confirm('Vous avez des modifications non sauvegardées. Voulez-vous les abandonner ?')
-    if (!confirm) {
-      isEditing.value = true
-    } else {
-      resetForm()
-    }
+function handleBeforeUnload(e) {
+  if (isEditing.value) {
+    e.preventDefault()
+    e.returnValue = ''  
   }
-})
+}
+
+
 
 onMounted(() => {
-  resetForm()
-  
+  resetForm()  
 })
+
+
+
 </script>
 
 <style scoped>
