@@ -210,9 +210,9 @@ import { formatHours, formatDate } from "../../utils/timeFormatter.js";
 import { sameDay, yesterday } from "../../utils/dateComparison.js";
 import { useUserStore } from '@/stores/user'
 const userStore = useUserStore()
-// État réactif
+
+
 const dashboardData = useDashboardStore();
-console.log(userStore.user.weightHistory[userStore.user.weightHistory.length - 1].weight , userStore.user.weightHistory[userStore.user.weightHistory.length - 2].weight)
 
 onMounted(async () => {
   dashboardData.fetchDashboardData();

@@ -12,14 +12,11 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
-// Charger les variables d’environnement
 
 const app = express();
 
-// Middleware pour parser le JSON
 app.use(express.json());
 
-// Routes utilisées
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -32,7 +29,6 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/sessions", sessionRoutes);
 const PORT = process.env.PORT || 5000;
 
-// Route test
 app.get("/", (req, res) => {
   res.send("Hello, Express + MongoDB!");
 });
